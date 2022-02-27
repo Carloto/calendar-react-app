@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-// import logo from './logo.svg';
-import "./App.css";
-import { getEvents, IEvent } from "./backend";
+import React, { useEffect } from 'react';
+import { getEvents, IEvent } from '../backend';
+import './App.css';
+import CalendarPage from './CalendarPage';
 
 function App() {
   useEffect(() => {
@@ -13,7 +13,7 @@ function App() {
     })();
   }, []);
 
-  return <div>yo</div>;
+  return <CalendarPage />;
 }
 
 export default App;
