@@ -9,7 +9,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { getCalendars, getEvents, ICalendar, IEvent } from '../backend';
+import { addMonth, monthToString } from './dateUtils';
 
 /**
  * TODO
@@ -20,15 +22,19 @@ import { getCalendars, getEvents, ICalendar, IEvent } from '../backend';
 const weekDays = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
 
 function CalendarPage() {
+  const { month = '' } = useParams<{ month: string }>();
+
   const [calendars, setCalendars] = useState<ICalendar[]>([]);
   const [selectedCalendars, setSelectedCalendars] = useState<boolean[]>([]);
   const [events, setEvents] = useState<IEvent[]>([]);
+
   const weeks = generateCalendar(
-    getToday(),
+    month + '-01',
     events,
     calendars,
     selectedCalendars
   );
+
   const startDate = weeks[0][0].date;
   const endDate = weeks[weeks.length - 1][6].date;
 
@@ -77,15 +83,23 @@ function CalendarPage() {
       <Box flex={1} display={'flex'} flexDirection={'column'}>
         <Box display={'flex'} alignItems={'center'} padding={'8px 16px'}>
           <Box>
-            <IconButton aria-label='Previous month'>
+            <IconButton
+              aria-label='Previous month'
+              component={Link}
+              to={`/calendar/${addMonth(month, -1)}`}
+            >
               <Icon>chevron_left</Icon>
             </IconButton>
-            <IconButton aria-label='Next month'>
+            <IconButton
+              aria-label='Next month'
+              component={Link}
+              to={`/calendar/${addMonth(month, 1)}`}
+            >
               <Icon>chevron_right</Icon>
             </IconButton>
           </Box>
           <Box flex={1} component={'h3'} marginLeft={'16px'}>
-            June 2021
+            {monthToString(month)}
           </Box>
           <IconButton aria-label='User account'>
             <Avatar>
@@ -245,8 +259,4 @@ function generateCalendar(
   } while (currDay.getMonth() === currMonth);
 
   return weeks;
-}
-
-function getToday() {
-  return '2021-06-17';
 }
