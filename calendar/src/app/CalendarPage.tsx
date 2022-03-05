@@ -1,12 +1,18 @@
 import { Box, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getCalendars, getEvents, ICalendar, IEvent } from '../backend';
+import {
+  getCalendars,
+  getEvents,
+  ICalendar,
+  IEvent,
+  IOpenEvent,
+} from '../backend';
 import Calendar, { ICalendarCell } from './Calendar';
 import CalendarHeader from './CalendarHeader';
 import CalendarList from './CalendarList';
 import { getToday } from './dateUtils';
-import EventDialog, { IOpenEvent } from './EventDialog';
+import EventDialog from './EventDialog';
 
 function CalendarPage() {
   const { month = '' } = useParams<{ month: string }>();
@@ -49,6 +55,10 @@ function CalendarPage() {
     });
   }
 
+  async function handleSave() {
+    setEvents(await getEvents(startDate, endDate));
+  }
+
   return (
     <Box display={'flex'} height={'100%'} alignItems='stretch'>
       <Box
@@ -74,6 +84,7 @@ function CalendarPage() {
         event={openEvent}
         calendars={calendars}
         handleClose={() => setOpenEvent(null)}
+        handleSave={handleSave}
       />
     </Box>
   );
