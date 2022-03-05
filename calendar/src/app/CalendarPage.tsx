@@ -5,6 +5,8 @@ import { getCalendars, getEvents, ICalendar, IEvent } from '../backend';
 import Calendar, { ICalendarCell } from './Calendar';
 import CalendarHeader from './CalendarHeader';
 import CalendarList from './CalendarList';
+import { getToday } from './dateUtils';
+import EventDialog, { IOpenEvent } from './EventDialog';
 
 function CalendarPage() {
   const { month = '' } = useParams<{ month: string }>();
@@ -12,6 +14,7 @@ function CalendarPage() {
   const [calendars, setCalendars] = useState<ICalendar[]>([]);
   const [selectedCalendars, setSelectedCalendars] = useState<boolean[]>([]);
   const [events, setEvents] = useState<IEvent[]>([]);
+  const [openEvent, setOpenEvent] = useState<IOpenEvent | null>(null);
 
   const weeks = generateCalendar(
     month + '-01',
@@ -38,6 +41,14 @@ function CalendarPage() {
     setSelectedCalendars(newCalendar);
   }
 
+  function handleOpenEvent() {
+    setOpenEvent({
+      date: getToday(),
+      desc: '',
+      calendarId: calendars[0].id,
+    });
+  }
+
   return (
     <Box display={'flex'} height={'100%'} alignItems='stretch'>
       <Box
@@ -46,7 +57,9 @@ function CalendarPage() {
         padding={'8px 16px'}
       >
         <h2>React Calendar</h2>
-        <Button variant='contained'>New event</Button>
+        <Button variant='contained' onClick={handleOpenEvent}>
+          New event
+        </Button>
         <CalendarList
           calendars={calendars}
           selectedCalendars={selectedCalendars}
@@ -57,6 +70,11 @@ function CalendarPage() {
         <CalendarHeader month={month} />
         <Calendar weeks={weeks} />
       </Box>
+      <EventDialog
+        event={openEvent}
+        calendars={calendars}
+        handleClose={() => setOpenEvent(null)}
+      />
     </Box>
   );
 }
