@@ -6,15 +6,24 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import React from 'react';
 import { ICalendar, IEvent } from '../backend';
 
 const weekDays = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
 
 interface ICalendarProps {
   weeks: ICalendarCell[][];
+  handleClickDay: (date: string) => void;
+  handleClickEvent: (event: IEvent) => void;
 }
 
-function Calendar({ weeks }: ICalendarProps) {
+function Calendar({ weeks, handleClickDay, handleClickEvent }: ICalendarProps) {
+  function handleClick(e: React.MouseEvent, date: string) {
+    if (e.target === e.currentTarget) {
+      handleClickDay(date);
+    }
+  }
+
   return (
     <TableContainer style={{ flex: 1 }} component={'div'}>
       <Table
@@ -46,7 +55,11 @@ function Calendar({ weeks }: ICalendarProps) {
           {weeks.map((week, i) => (
             <TableRow key={i}>
               {week.map((cell) => (
-                <TableCell key={cell.date} align='center'>
+                <TableCell
+                  key={cell.date}
+                  onClick={(e) => handleClick(e, cell.date)}
+                  align='center'
+                >
                   <Box
                     component={'div'}
                     sx={{
@@ -60,6 +73,7 @@ function Calendar({ weeks }: ICalendarProps) {
                     const color = event.calendar?.color;
                     return (
                       <Box
+                        onClick={() => handleClickEvent(event)}
                         key={event.id}
                         component={'button'}
                         sx={{

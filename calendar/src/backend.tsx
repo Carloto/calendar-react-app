@@ -38,3 +38,21 @@ export async function createEvent(event: IOpenEvent): Promise<IEvent[]> {
   });
   return await res.json();
 }
+
+export async function updateEvent(event: IOpenEvent): Promise<IEvent[]> {
+  const res = await fetch(`http://localhost:8080/events/${event.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(event),
+  });
+  return await res.json();
+}
+
+export async function deleteEvent(id: number): Promise<void> {
+  const res = await fetch(`http://localhost:8080/events/${id}`, {
+    method: 'DELETE',
+  });
+  return await res.json();
+}

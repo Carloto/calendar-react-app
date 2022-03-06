@@ -70,12 +70,6 @@
       }
     },
     {
-      "id": 10,
-      "date": "2021-06-17",
-      "desc": "Teste 2",
-      "calendarId": 1
-    },
-    {
       "date": "2021-06-19",
       "desc": "teste",
       "calendarId": 1,
@@ -84,15 +78,14 @@
     },
     {
       "date": "2021-06-18",
-      "desc": "depilar",
+      "desc": "depilar o peito",
       "calendarId": 1,
-      "id": 12
-    },
-    {
-      "date": "2021-06-21",
-      "desc": "entregar relatorio",
-      "calendarId": 2,
-      "id": 13
+      "id": 12,
+      "calendar": {
+        "id": 1,
+        "name": "Pessoal",
+        "color": "#8E24AA"
+      }
     },
     {
       "date": "2021-06-24",

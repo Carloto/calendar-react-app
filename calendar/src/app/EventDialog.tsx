@@ -5,8 +5,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import { Box } from '@mui/system';
 import React, { useEffect, useRef, useState } from 'react';
-import { createEvent, ICalendar, IOpenEvent } from '../backend';
+import {
+  createEvent,
+  deleteEvent,
+  ICalendar,
+  IOpenEvent,
+  updateEvent,
+} from '../backend';
 
 interface IEventDialogProps {
   event: IOpenEvent | null;
@@ -35,6 +42,8 @@ function EventDialog({
     setErrors({});
   }, [event]);
 
+  const isNewEvent = !event?.id;
+
   function validate(): boolean {
     if (openEvent) {
       const currErrors: IFormErrors = {};
@@ -55,16 +64,26 @@ function EventDialog({
   async function saveEvent(e: React.FormEvent) {
     e.preventDefault();
     if (openEvent && validate()) {
-      await createEvent(openEvent);
+      if (isNewEvent) {
+        await createEvent(openEvent);
+      } else {
+        await updateEvent(openEvent);
+      }
       handleSave();
-      handleClose();
+    }
+  }
+
+  async function handleDelete() {
+    if (openEvent) {
+      await deleteEvent(openEvent.id!);
+      handleSave();
     }
   }
 
   return (
     <div>
       <Dialog open={!!openEvent} onClose={handleClose}>
-        <DialogTitle>New openEvent</DialogTitle>
+        <DialogTitle>{isNewEvent ? 'New event' : 'Edit event'}</DialogTitle>
         <form onSubmit={saveEvent}>
           <DialogContent>
             {!!openEvent && (
@@ -134,10 +153,17 @@ function EventDialog({
             )}
           </DialogContent>
           <DialogActions>
-            <Button type='button' onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button type='submit'>Save</Button>
+            {!isNewEvent && (
+              <Button type='button' onClick={handleDelete}>
+                Delete
+              </Button>
+            )}
+            <Box flex='1' textAlign={'end'}>
+              <Button type='button' onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button type='submit'>Save</Button>
+            </Box>
           </DialogActions>
         </form>
       </Dialog>

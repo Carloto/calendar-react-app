@@ -47,9 +47,9 @@ function CalendarPage() {
     setSelectedCalendars(newCalendar);
   }
 
-  function handleOpenEvent() {
+  function handleOpenEvent(date: string) {
     setOpenEvent({
-      date: getToday(),
+      date,
       desc: '',
       calendarId: calendars[0].id,
     });
@@ -57,6 +57,7 @@ function CalendarPage() {
 
   async function handleSave() {
     setEvents(await getEvents(startDate, endDate));
+    setOpenEvent(null);
   }
 
   return (
@@ -67,7 +68,7 @@ function CalendarPage() {
         padding={'8px 16px'}
       >
         <h2>React Calendar</h2>
-        <Button variant='contained' onClick={handleOpenEvent}>
+        <Button variant='contained' onClick={() => handleOpenEvent(getToday())}>
           New event
         </Button>
         <CalendarList
@@ -78,7 +79,11 @@ function CalendarPage() {
       </Box>
       <Box flex={1} display={'flex'} flexDirection={'column'}>
         <CalendarHeader month={month} />
-        <Calendar weeks={weeks} />
+        <Calendar
+          weeks={weeks}
+          handleClickDay={handleOpenEvent}
+          handleClickEvent={setOpenEvent}
+        />
       </Box>
       <EventDialog
         event={openEvent}
