@@ -7,6 +7,7 @@ import {
   ICalendar,
   IEvent,
   IOpenEvent,
+  IUser,
 } from '../backend';
 import Calendar, { ICalendarCell } from './Calendar';
 import CalendarHeader from './CalendarHeader';
@@ -14,7 +15,12 @@ import CalendarList from './CalendarList';
 import { getToday } from './dateUtils';
 import EventDialog from './EventDialog';
 
-function CalendarPage() {
+interface CalendarPageProps {
+  onLogout: () => void;
+  user: IUser;
+}
+
+function CalendarPage({ onLogout, user }: CalendarPageProps) {
   const { month = '' } = useParams<{ month: string }>();
 
   const [calendars, setCalendars] = useState<ICalendar[]>([]);
@@ -34,10 +40,14 @@ function CalendarPage() {
 
   useEffect(() => {
     (async () => {
-      const calendars = await getCalendars();
-      setSelectedCalendars(calendars.map(() => true));
-      setCalendars(calendars);
-      setEvents(await getEvents(startDate, endDate));
+      try {
+        const calendars = await getCalendars();
+        setSelectedCalendars(calendars.map(() => true));
+        setCalendars(calendars);
+        setEvents(await getEvents(startDate, endDate));
+      } catch (e) {
+        console.error(e);
+      }
     })();
   }, [startDate, endDate]);
 
@@ -78,7 +88,7 @@ function CalendarPage() {
         />
       </Box>
       <Box flex={1} display={'flex'} flexDirection={'column'}>
-        <CalendarHeader month={month} />
+        <CalendarHeader month={month} user={user} onLogout={onLogout} />
         <Calendar
           weeks={weeks}
           handleClickDay={handleOpenEvent}
