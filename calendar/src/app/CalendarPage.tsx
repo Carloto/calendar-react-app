@@ -6,8 +6,7 @@ import {
   getEvents,
   ICalendar,
   IEvent,
-  IOpenEvent,
-  IUser,
+  IOpenEvent
 } from '../backend';
 import Calendar, { ICalendarCell } from './Calendar';
 import CalendarHeader from './CalendarHeader';
@@ -15,12 +14,7 @@ import CalendarList from './CalendarList';
 import { getToday } from './dateUtils';
 import EventDialog from './EventDialog';
 
-interface CalendarPageProps {
-  onLogout: () => void;
-  user: IUser;
-}
-
-function CalendarPage({ onLogout, user }: CalendarPageProps) {
+function CalendarPage() {
   const { month = '' } = useParams<{ month: string }>();
 
   const [calendars, setCalendars] = useState<ICalendar[]>([]);
@@ -88,7 +82,7 @@ function CalendarPage({ onLogout, user }: CalendarPageProps) {
         />
       </Box>
       <Box flex={1} display={'flex'} flexDirection={'column'}>
-        <CalendarHeader month={month} user={user} onLogout={onLogout} />
+        <CalendarHeader month={month} />
         <Calendar
           weeks={weeks}
           handleClickDay={handleOpenEvent}

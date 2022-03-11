@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { ICalendar, IEvent } from '../backend';
+import { getToday } from './dateUtils';
 
 const weekDays = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
 
@@ -63,8 +64,15 @@ function Calendar({ weeks, handleClickDay, handleClickEvent }: ICalendarProps) {
                   <Box
                     component={'div'}
                     sx={{
+                      display: 'inline-block',
+                      width: '24px',
+                      lineHeight: '24px',
                       fontWeight: 500,
                       marginBottom: '4px',
+                      borderRadius: '50%',
+                      backgroundColor:
+                        cell.date === getToday() ? '#3f51b5' : 'unset',
+                      color: cell.date === getToday() ? 'white' : 'unset',
                     }}
                   >
                     {cell.dayOfMonth}
