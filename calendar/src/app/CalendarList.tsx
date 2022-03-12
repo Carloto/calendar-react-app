@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import React from 'react';
 import { ICalendar } from '../backend';
 
 interface ICalendarListProps {
@@ -9,7 +10,7 @@ interface ICalendarListProps {
   selectedCalendars: boolean[];
 }
 
-function CalendarList({
+const CalendarList = React.memo(function ({
   calendars,
   toggleCalendar,
   selectedCalendars,
@@ -33,6 +34,6 @@ function CalendarList({
       ))}
     </Box>
   );
-}
+});
 
 export default CalendarList;

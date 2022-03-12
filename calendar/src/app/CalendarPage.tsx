@@ -1,12 +1,12 @@
 import { Box, Button } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   getCalendars,
   getEvents,
   ICalendar,
   IEvent,
-  IOpenEvent
+  IOpenEvent,
 } from '../backend';
 import Calendar, { ICalendarCell } from './Calendar';
 import CalendarHeader from './CalendarHeader';
@@ -22,13 +22,14 @@ function CalendarPage() {
   const [events, setEvents] = useState<IEvent[]>([]);
   const [openEvent, setOpenEvent] = useState<IOpenEvent | null>(null);
 
-  const weeks = generateCalendar(
-    month + '-01',
-    events,
-    calendars,
-    selectedCalendars
-  );
-
+  const weeks = useMemo(() => {
+    return generateCalendar(
+      month + '-01',
+      events,
+      calendars,
+      selectedCalendars
+    );
+  }, [month, events, calendars, selectedCalendars]);
   const startDate = weeks[0][0].date;
   const endDate = weeks[weeks.length - 1][6].date;
 
@@ -45,19 +46,25 @@ function CalendarPage() {
     })();
   }, [startDate, endDate]);
 
-  function toggleCalendar(index: number) {
-    const newCalendar = [...selectedCalendars];
-    newCalendar[index] = !newCalendar[index];
-    setSelectedCalendars(newCalendar);
-  }
+  const toggleCalendar = useCallback(
+    function (index: number) {
+      const newCalendar = [...selectedCalendars];
+      newCalendar[index] = !newCalendar[index];
+      setSelectedCalendars(newCalendar);
+    },
+    [selectedCalendars]
+  );
 
-  function handleOpenEvent(date: string) {
-    setOpenEvent({
-      date,
-      desc: '',
-      calendarId: calendars[0].id,
-    });
-  }
+  const handleOpenEvent = useCallback(
+    function (date: string) {
+      setOpenEvent({
+        date,
+        desc: '',
+        calendarId: calendars[0].id,
+      });
+    },
+    [calendars]
+  );
 
   async function handleSave() {
     setEvents(await getEvents(startDate, endDate));

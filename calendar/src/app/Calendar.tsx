@@ -18,7 +18,11 @@ interface ICalendarProps {
   handleClickEvent: (event: IEvent) => void;
 }
 
-function Calendar({ weeks, handleClickDay, handleClickEvent }: ICalendarProps) {
+const Calendar = React.memo(function ({
+  weeks,
+  handleClickDay,
+  handleClickEvent,
+}: ICalendarProps) {
   function handleClick(e: React.MouseEvent, date: string) {
     if (e.target === e.currentTarget) {
       handleClickDay(date);
@@ -132,7 +136,7 @@ function Calendar({ weeks, handleClickDay, handleClickEvent }: ICalendarProps) {
       </Table>
     </TableContainer>
   );
-}
+});
 
 export default Calendar;
 
