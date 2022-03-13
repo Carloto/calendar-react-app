@@ -1,26 +1,25 @@
 import { Box, Button } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  getCalendars,
-  getEvents,
-  ICalendar,
-  IEvent,
-  IOpenEvent,
-} from '../backend';
+import { getCalendars, getEvents, ICalendar, IEvent } from '../backend';
 import Calendar, { ICalendarCell } from './Calendar';
 import CalendarHeader from './CalendarHeader';
 import CalendarList from './CalendarList';
+import { reducer } from './calendarPageReducer';
 import { getToday } from './dateUtils';
 import EventDialog from './EventDialog';
 
 function CalendarPage() {
   const { month = '' } = useParams<{ month: string }>();
 
-  const [calendars, setCalendars] = useState<ICalendar[]>([]);
-  const [selectedCalendars, setSelectedCalendars] = useState<boolean[]>([]);
-  const [events, setEvents] = useState<IEvent[]>([]);
-  const [openEvent, setOpenEvent] = useState<IOpenEvent | null>(null);
+  const [state, dispatch] = useReducer(reducer, {
+    calendars: [],
+    selectedCalendars: [],
+    events: [],
+    openEvent: null,
+  });
+
+  const { calendars, selectedCalendars, events, openEvent } = state;
 
   const weeks = useMemo(() => {
     return generateCalendar(
@@ -36,39 +35,29 @@ function CalendarPage() {
   useEffect(() => {
     (async () => {
       try {
-        const calendars = await getCalendars();
-        setSelectedCalendars(calendars.map(() => true));
-        setCalendars(calendars);
-        setEvents(await getEvents(startDate, endDate));
+        dispatch({
+          type: 'load',
+          payload: {
+            calendars: await getCalendars(),
+            events: await getEvents(startDate, endDate),
+          },
+        });
       } catch (e) {
         console.error(e);
       }
     })();
   }, [startDate, endDate]);
 
-  const toggleCalendar = useCallback(
-    function (index: number) {
-      const newCalendar = [...selectedCalendars];
-      newCalendar[index] = !newCalendar[index];
-      setSelectedCalendars(newCalendar);
-    },
-    [selectedCalendars]
-  );
-
-  const handleOpenEvent = useCallback(
-    function (date: string) {
-      setOpenEvent({
-        date,
-        desc: '',
-        calendarId: calendars[0].id,
-      });
-    },
-    [calendars]
-  );
+  const handleCloseEvent = useCallback(function () {
+    dispatch({ type: 'close' });
+  }, []);
 
   async function handleSave() {
-    setEvents(await getEvents(startDate, endDate));
-    setOpenEvent(null);
+    dispatch({
+      type: 'load',
+      payload: { events: await getEvents(startDate, endDate) },
+    });
+    handleCloseEvent();
   }
 
   return (
@@ -79,27 +68,28 @@ function CalendarPage() {
         padding={'8px 16px'}
       >
         <h2>React Calendar</h2>
-        <Button variant='contained' onClick={() => handleOpenEvent(getToday())}>
+        <Button
+          variant='contained'
+          onClick={() =>
+            dispatch({ type: 'new', payload: { date: getToday() } })
+          }
+        >
           New event
         </Button>
         <CalendarList
           calendars={calendars}
           selectedCalendars={selectedCalendars}
-          toggleCalendar={toggleCalendar}
+          dispatch={dispatch}
         />
       </Box>
       <Box flex={1} display={'flex'} flexDirection={'column'}>
         <CalendarHeader month={month} />
-        <Calendar
-          weeks={weeks}
-          handleClickDay={handleOpenEvent}
-          handleClickEvent={setOpenEvent}
-        />
+        <Calendar weeks={weeks} dispatch={dispatch} />
       </Box>
       <EventDialog
         event={openEvent}
         calendars={calendars}
-        handleClose={() => setOpenEvent(null)}
+        handleClose={handleCloseEvent}
         handleSave={handleSave}
       />
     </Box>

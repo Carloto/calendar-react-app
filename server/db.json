@@ -36,7 +36,12 @@
       "id": 4,
       "date": "2021-06-03",
       "desc": "Entrega do projeto",
-      "calendarId": 2
+      "calendarId": 2,
+      "calendar": {
+        "id": 2,
+        "name": "Trabalho",
+        "color": "#7CB342"
+      }
     },
     {
       "id": 5,
@@ -93,6 +98,12 @@
       "calendarId": 1,
       "time": "10:00",
       "id": 14
+    },
+    {
+      "date": "2021-06-22",
+      "desc": "hey",
+      "calendarId": 1,
+      "id": 15
     }
   ]
 }

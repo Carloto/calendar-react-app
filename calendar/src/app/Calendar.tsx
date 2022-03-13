@@ -8,24 +8,20 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { ICalendar, IEvent } from '../backend';
+import { ICalendarPageAction } from './calendarPageReducer';
 import { getToday } from './dateUtils';
 
 const weekDays = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
 
 interface ICalendarProps {
   weeks: ICalendarCell[][];
-  handleClickDay: (date: string) => void;
-  handleClickEvent: (event: IEvent) => void;
+  dispatch: React.Dispatch<ICalendarPageAction>;
 }
 
-const Calendar = React.memo(function ({
-  weeks,
-  handleClickDay,
-  handleClickEvent,
-}: ICalendarProps) {
+const Calendar = React.memo(function ({ weeks, dispatch }: ICalendarProps) {
   function handleClick(e: React.MouseEvent, date: string) {
     if (e.target === e.currentTarget) {
-      handleClickDay(date);
+      dispatch({ type: 'new', payload: { date } });
     }
   }
 
@@ -85,7 +81,9 @@ const Calendar = React.memo(function ({
                     const color = event.calendar?.color;
                     return (
                       <Box
-                        onClick={() => handleClickEvent(event)}
+                        onClick={() =>
+                          dispatch({ type: 'edit', payload: { event } })
+                        }
                         key={event.id}
                         component={'button'}
                         sx={{

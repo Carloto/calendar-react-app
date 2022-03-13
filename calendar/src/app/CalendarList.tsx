@@ -3,17 +3,18 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import React from 'react';
 import { ICalendar } from '../backend';
+import { ICalendarPageAction } from './calendarPageReducer';
 
 interface ICalendarListProps {
   calendars: ICalendar[];
-  toggleCalendar: (index: number) => void;
   selectedCalendars: boolean[];
+  dispatch: React.Dispatch<ICalendarPageAction>;
 }
 
 const CalendarList = React.memo(function ({
   calendars,
-  toggleCalendar,
   selectedCalendars,
+  dispatch,
 }: ICalendarListProps) {
   return (
     <Box marginTop={'64px'}>
@@ -26,7 +27,9 @@ const CalendarList = React.memo(function ({
             <Checkbox
               style={{ color: calendar.color }}
               checked={selectedCalendars[i]}
-              onChange={() => toggleCalendar(i)}
+              onChange={() =>
+                dispatch({ type: 'toggle', payload: { index: i } })
+              }
             />
           }
           label={calendar.name}
