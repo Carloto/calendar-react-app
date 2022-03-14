@@ -2,14 +2,14 @@ import { Avatar, Icon, IconButton } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box } from '@mui/system';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { logoutUser } from '../backend';
-import { AuthContext } from './authContext';
+import { useAuthContext } from './authContext';
 
 function UserMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { user, onLogout } = useContext(AuthContext);
+  const { user, onLogout } = useAuthContext();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
